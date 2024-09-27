@@ -1,0 +1,34 @@
+---
+- name: Configure Apache on Arch Linux
+  hosts: apacheSchoolDylan
+  become: yes
+
+  tasks:
+    - name: Comment out mpm_event_module
+      replace:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^LoadModule mpm_event_module'
+        replace: '#LoadModule mpm_event_module'
+      notify: Restart Apache
+   
+    - name: Uncomment mpm_prefork_module
+      replace:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^#LoadModule mpm_prefork_module'
+        replace: 'LoadModule mpm_prefork_module'
+      notify: Restart Apache
+
+    - name: add PHP-related configurations
+      blockinfile:
+        path: /etc/httpd/conf/httpd.conf
+        block: |
+          LoadModule php_module modules/libphp.so
+          AddHandler php-script .php
+          Include conf/extra/php_module.conf
+      notify: Restart Apache 
+
+  handlers:
+    - name: Restart Apache
+      systemd:
+        name: httpd
+        state: restarted

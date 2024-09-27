@@ -1,0 +1,42 @@
+---
+- name: Install Apache and PHP
+  hosts: apacheSchoolDylan
+  become: yes
+
+  tasks:
+    - name: Update package cache
+      pacman:
+        update_cache: yes
+
+    - name: Install Apache web server
+      pacman:
+        name: apache
+        state: present
+
+    - name: Start Apache and enable on boot
+      systemd:
+        name: httpd
+        enabled: yes
+        state: started
+
+    - name: Install PHP and required modules
+      pacman:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - php
+        - php-apache
+      register: php_install_result
+
+
+    - name: Create a PHP info file
+      copy:
+        content: "<?php phpinfo(); ?>"
+        dest: /srv/http/info.php
+      notify: Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      systemd:
+        name: httpd
+        state: restarted

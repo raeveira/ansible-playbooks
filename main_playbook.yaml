@@ -1,0 +1,12 @@
+---
+- name: Run Apache Playbook
+  import_playbook: apache.yaml
+
+- name: Run PHP Playbook
+  import_playbook: php.yaml
+
+- name: Run MariaDB Playbook
+  import_playbook: mariadb.yaml
+
+- name: Run Git Playbook
+  import_playbook: git.yaml

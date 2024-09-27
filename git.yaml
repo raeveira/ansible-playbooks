@@ -1,0 +1,23 @@
+---
+- name: clone git repo
+  hosts: apacheSchoolDylan
+  become: yes
+  become_method: sudo
+  become_user: root
+  remote_user: dylanbackes
+  gather_facts: yes
+  tasks:
+    - name: create directory
+      file:
+        path: /srv/http/github/
+        state: directory
+
+    - name: Install git
+      pacman:
+        name: git
+        state: latest
+   
+    - name: Clone github repo named ansibleWebsite
+      git:
+        repo: https://www.github.com/raeveira/ansiblewebsite.git
+        dest: /srv/http/github
